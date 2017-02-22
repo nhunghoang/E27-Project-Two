@@ -16,8 +16,8 @@ def pyr_build(img, N=6):
             # If we're at the smallest size pyramid image
             lp.append(G_i)
             L = lp[-1]
-            cv2.imshow('cvland', 0.5 + 0.5 *(L / np.abs(L).max()))
-            cv2.waitKey(0)
+            # cv2.imshow('cvland', 0.5 + 0.5 *(L / np.abs(L).max()))
+            # cv2.waitKey(0)
         else:
             G_i_plus = cv2.pyrDown(G_i)
             print G_i_plus.shape
@@ -26,23 +26,10 @@ def pyr_build(img, N=6):
             L = G_i - G_i_up
             lp.append(L)
             G_i = G_i_plus.copy()
-            cv2.imshow( 'cvland', 0.5 + 0.5 *(L / np.abs(L).max()))
-            cv2.waitKey(0)
-            print 'shape G_i_plus', G_i_plus.shape
+            # cv2.imshow( 'cvland', 0.5 + 0.5 *(L / np.abs(L).max()))
+            # cv2.waitKey(0)
+            # print 'shape G_i_plus', G_i_plus.shape
 
-        """cv2.error: /Users/travis/miniconda3/conda-bld/work/opencv-3.1.0/modules'
-        /imgproc/src/pyramids.cpp:994: error: (-215)
-        std::abs(dsize.width - ssize.width*2) == dsize.width % 2 &&
-        std::abs(dsize.height - ssize.height*2) == dsize.height % 2 in function pyrUp_
-        """
-
-
-    print lp
-
-        # cv2.imshow( 'cvland', cv2.pyrUp(np.array(G_i_plus, dtype=np.uint8)))
-        # cv2.waitKey(0)
-        # print 'shape G_i_plus', G_i_plus.shape
-        #
 
 def main():
 
