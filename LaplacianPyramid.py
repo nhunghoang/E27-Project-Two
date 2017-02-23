@@ -43,18 +43,57 @@ def pyr_reconstruct(lp):
     #cv2.waitKey(0)
     return R_i_minus
 
+def alpha_blend(A, B, alpha):
+    A = A.astype(alpha.dtype)
+    B = B.astype(alpha.dtype)
+    # if A and B are RGB images, we must pad
+    # out alpha to be the right shape
+    if len(A.shape) == 3:
+        alpha = np.expand_dims(alpha, 2)
+    return A + alpha * (B-A)
+
+def laplacian_blend(A, B, alpha):
+    # Convert to prefered format for safer math on images
+    A, B = np.array(A,dtype=np.float32), np.array(B, dtype=np.float32)
+    # Get both pyramids
+    A_pr, B_pr = pyr_build(A), pyr_build(B)
+    layer_blend = []
+    # Use mask on both pyramids (continuosly resizing, of course)
+    for a, b in zip(A_pr, B_pr):
+        assert( a.shape[:2] == b.shape[:2] )
+        height, width = a.shape[:2]
+        alpha = cv2.resize(alpha, (width, height), interpolation = cv2.INTER_AREA)
+        layer_blend.append(alpha_blend(a,b, alpha))
+
+    # Ta-da
+    return np.clip(pyr_reconstruct(layer_blend),0,255)
+
+def hybrid_image(A,B, sigma_a='?', sigma_b='?'):
+    pass
+
 def main():
 
-
-    image1 = "Images/penguin.png"
+    image1 = "Images/bear34.jpeg"
     base_image1 = cv2.imread(image1)
     lp1 = pyr_build(base_image1)
     reconstructed1 = pyr_reconstruct(lp1)
 
-    image2 = "Images/bearface.jpg"
+    image2 = "Images/pengreal.jpeg"
     base_image2 = cv2.imread(image2)
     lp2 = pyr_build(base_image2)
     reconstructed2 = pyr_reconstruct(lp2)
+
+    width, height, _ = base_image2.shape
+    mask = np.zeros((width, height), dtype=np.uint8)
+    cv2.ellipse(mask, (height/2+25, width/2+45), (260, 75), 90, 0, 360, (255, 255, 255), -1, cv2.LINE_AA)
+    mask_blurred = cv2.GaussianBlur(mask, (0,0), 5)
+    alpha = mask_blurred.astype(np.float32) / 255.0
+
+    cv2.imshow('blended', np.array(alpha_blend(base_image1, base_image2, alpha), dtype=np.uint8))
+    cv2.waitKey(0)
+
+    cv2.imshow('blended', np.array(laplacian_blend(base_image1, base_image2, alpha), dtype=np.uint8))
+    cv2.waitKey(0)
 
 if __name__=='__main__':
     main()
