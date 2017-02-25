@@ -5,7 +5,6 @@ import cvk2
 def main():
 	imgA = cv2.imread("Images/sunflower.jpg")
 	imgB = cv2.imread("Images/bear34.jpeg")
-	height, width, ret = imgA.shape
 	'''cv2.imshow("Image A", imgA)
 	cv2.waitKey(0)	
 	bwA = cv2.cvtColor(imgA, cv2.COLOR_BGR2GRAY)
@@ -19,17 +18,17 @@ def main():
 	squared_dists = (diffs_per_channel**2).sum(axis=2)
 	dists = np.sqrt(squared_dists)
 	bwA = np.clip(dists, 0, 255).astype(np.uint8)
-	'''cv2.imshow("Image A BW", bwA)
-	cv2.waitKey(0)'''	
 	
-	#threshold and invert
-	#clear speckles off background 
+	#threshold, invert, morph, get petals
 	ret, threshA = cv2.threshold(bwA, 125, 255, cv2.THRESH_BINARY)
 	threshA = 255-threshA
-	'''cv2.imshow("Image A THRES", threshA)
-	cv2.waitKey(0)'''	
 	morphA = cv2.morphologyEx(threshA, cv2.MORPH_ERODE, np.ones((3,3),np.uint8))
+	isolated = np.zeros_like(imgA)
+	mask = morphA.view(np.bool)
+	isolated[mask] = imgA[mask]
 	cv2.imshow("Image A MORPH", morphA)
+	cv2.waitKey(0)
+	cv2.imshow("Image A MORPH", isolated)
 	cv2.waitKey(0)
 
 	#find the object as a contour and bound it by rectangle
@@ -39,20 +38,20 @@ def main():
 	contours = sorted(contours, key=cv2.contourArea)
 	x,y,w,h = cv2.boundingRect(contours[-1])
 	centered = np.zeros_like(imgA)
+	height,width, ret = centered.shape
 	rect = cv2.rectangle(contourImgA, (x,y), (x+w,y+h), (135,65,86))
 	cv2.drawContours(contourImgA, contours, -1, (44,134,88), -1 )
 	cv2.imshow("Image A CONT", contourImgA)
 	cv2.waitKey(0)
-	#shifting to center
-	contour_half_width = (w-x)/2
-	contour_half_height = (h-y)/2
-	center_top = (height/2)-contour_half_height
+
+	#shift object to center
+	center_top = (height/2)-(h/2)
 	center_bottom = center_top+h
-	center_left = (width/2)-contour_half_width
+	center_left = (width/2)-(w/2)
 	center_right = center_left+w
 	accum = 0
 	for row in range(center_top, center_bottom+1):
-		centered[row] = contourImgA[accum]
+		centered[row] = isolated[accum]
 		accum += 1
 	cv2.imshow("Shifted down",centered)
 	cv2.waitKey(0)
@@ -60,9 +59,12 @@ def main():
 	for col in range(center_left, center_right+1):
 		for row in range(center_top, center_bottom+1):
 			centered[row][col] = centered[row][col+shift]
+	for col in range(center_right+1, width):
+		for row in range(center_top,center_bottom+1):
+			centered[row][col] = (0,0,0)
+	centered[
 	cv2.imshow("Shifted left",centered)
 	cv2.waitKey(0)
 
-
-
+	#next to do: change black background to (60, 137, 100)
 main()
