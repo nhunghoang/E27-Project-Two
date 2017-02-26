@@ -44,20 +44,18 @@ def main():
     
     cv2.namedWindow("win")
 
-    for i in range(1,24,2):
-        print i
-        lopassed = lopass(g_imgA, sigA, 9)
-        hipassed = hipass(g_imgB, sigB, 9)
-            
-        hybrid = kA * lopassed + kB * hipassed
+    lopassed = lopass(g_imgA, sigA, 9)
+    hipassed = hipass(g_imgB, sigB, 9)
         
-        if hybrid.min() < 0:
-            hybrid -= hybrid.min()
-                
-        hybrid_norm = (hybrid *(255/hybrid.max())).astype(np.uint8)
+    hybrid = kA * lopassed + kB * hipassed
     
-        cv2.imshow("win", hybrid_norm)
-        cv2.waitKey(0)
+    if hybrid.min() < 0:
+        hybrid -= hybrid.min()
+            
+    hybrid_norm = (hybrid *(255/hybrid.max())).astype(np.uint8)
+
+    cv2.imshow("win", hybrid_norm)
+    cv2.waitKey(0)
 
     cv2.imwrite("hybrid.jpg",hybrid_norm)
 
