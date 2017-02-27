@@ -1,3 +1,10 @@
+'''
+This program geographically centers the object of interest in a given image. Additionally, given an image containing one face, the program will detect the rectangle area in the image containing the face and geographically center the area onto a black background. 
+
+Author: Nhung Hoang
+Date: Feb. 2017
+'''
+
 import cv2
 import numpy as np
 import cvk2
@@ -6,7 +13,8 @@ def main():
 	imgA = cv2.imread("Images/sunflower.jpg")
 	imgB = cv2.imread("Images/zucker1.jpg")
 
-	# grayscale based on petal color
+	#grayscale based on petal color
+	#based on Matt Zucker's code in tutorial.py and region.py
 	yellow = (0, 220, 248)
 	diffs_per_channel = imgA.astype(np.float32) - yellow
 	squared_dists = (diffs_per_channel**2).sum(axis=2)
@@ -48,6 +56,10 @@ def main():
 	for col in range(center_right+1, width):
 		for row in range(center_top,center_bottom+1):
 			centered[row][col] = (0,0,0)
+	for row in range(height):
+		for col in range(width):
+			if all(centered[row][col]) == 0:
+				centered[row][col] = imgA[row][col]
 	cv2.imwrite("centered_flower.jpg",centered)
 
 	#face recognition
