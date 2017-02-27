@@ -68,24 +68,22 @@ def laplacian_blend(A, B, alpha):
     # Ta-da
     return np.clip(pyr_reconstruct(layer_blend),0,255)
 
-def hybrid_image(A,B, sigma_a='?', sigma_b='?'):
-    pass
 
 def main():
 
-    image1 = "Images/bear34.jpeg"
+    image1 = "centered_flower.jpg"
     base_image1 = cv2.imread(image1)
     lp1 = pyr_build(base_image1)
     reconstructed1 = pyr_reconstruct(lp1)
 
-    image2 = "Images/pengreal.jpeg"
+    image2 = "centered_face.jpg"
     base_image2 = cv2.imread(image2)
     lp2 = pyr_build(base_image2)
     reconstructed2 = pyr_reconstruct(lp2)
 
     width, height, _ = base_image2.shape
     mask = np.zeros((width, height), dtype=np.uint8)
-    cv2.ellipse(mask, (height/2+25, width/2+45), (260, 75), 90, 0, 360, (255, 255, 255), -1, cv2.LINE_AA)
+    cv2.ellipse(mask, (height/2, width/2), (140, 100), 90, 0, 360, (255, 255, 255), -1, cv2.LINE_AA)
     mask_blurred = cv2.GaussianBlur(mask, (0,0), 5)
     alpha = mask_blurred.astype(np.float32) / 255.0
 
