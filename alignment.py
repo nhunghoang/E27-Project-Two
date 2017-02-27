@@ -4,7 +4,7 @@ import cvk2
 
 def main():
 	imgA = cv2.imread("Images/sunflower.jpg")
-	imgB = cv2.imread("Images/zucker.jpeg")
+	imgB = cv2.imread("Images/zucker1.jpg")
 
 	# grayscale based on petal color
 	yellow = (0, 220, 248)
