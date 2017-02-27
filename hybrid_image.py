@@ -50,10 +50,10 @@ def main():
     # set parameters:
     # kA & kB are the weights of each image when added
     kA = 1
-    kB = 2
+    kB = 3
     # sigA and sigB are the stdev values for the Gaussian blur
     sigA = 5
-    sigB = 2
+    sigB = 3
     # ksize is size of Gaussian kernel for convolution
     ksize = 13
     
